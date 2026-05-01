@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from .models import Produto
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
 # ---------------------------------------------------------
 # 1. O "Segurança" (Proteção das rotas com JWT)
@@ -46,8 +47,10 @@ def login_view(request):
             usuario = dados.get('username')
             senha = dados.get('password')
 
-            # Simulação de usuário para o projeto (num cenário real, consultaria o banco)
-            if usuario == 'admin' and senha == 'pizzalab123':
+            # O Django vai lá no banco de dados e verifica se o usuário e a senha criptografada batem!
+            user = authenticate(username=usuario, password=senha)
+
+            if user is not None:
                 # Gera o Token JWT válido por 2 horas
                 payload = {
                     'user': usuario,
