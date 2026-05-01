@@ -2,6 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('pizzas/', views.gerenciar_pizzas, name='gerenciar_pizzas'),
-    path('pizzas/<int:id>/', views.gerenciar_pizza_id, name='gerenciar_pizza_id'),
+    # Nossa nova rota de Login
+    path('login/', views.login_view, name='login'),
+    
+    # Rotas do CRUD
+    path('produtos/', views.gerenciar_produtos, name='produtos_lista'),
+    path('produtos/<int:id>/', views.gerenciar_produtos, name='produtos_detalhe'),
 ]
