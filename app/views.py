@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from .models import Produto
+from django.contrib.auth.models import User
 
 # ---------------------------------------------------------
 # 1. O "Segurança" (Proteção das rotas com JWT)
@@ -121,3 +122,27 @@ def gerenciar_produtos(request, id=None):
         if linhas_afetadas[0] == 0:
             return JsonResponse({'error': 'Produto não encontrado!'}, status=404)
         return JsonResponse({'message': 'Produto excluído com sucesso!'})
+    
+@csrf_exempt
+def cadastrar_usuario(request):
+    if request.method == 'POST':
+        try:
+            dados = json.loads(request.body)
+            username = dados.get('username')
+            password = dados.get('password')
+
+            if not username or not password:
+                return JsonResponse({'error': 'Os campos username e password são obrigatórios.'}, status=400)
+
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({'error': 'Este nome de usuário já está em uso.'}, status=400)
+
+            # O create_user já salva a senha com hash de segurança automaticamente
+            user = User.objects.create_user(username=username, password=password)
+            
+            return JsonResponse({'message': 'Usuário cadastrado com sucesso!', 'id': user.id}, status=201)
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+            
+    return JsonResponse({'error': 'Método não permitido.'}, status=405)
